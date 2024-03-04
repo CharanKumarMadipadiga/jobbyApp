@@ -13,12 +13,10 @@ class LoginRoute extends Component {
   }
 
   onChangeUsername = event => {
-    const {username} = this.state
     this.setState({username: event.target.value})
   }
 
   onChangePassword = event => {
-    const {password} = this.state
     this.setState({password: event.target.value})
   }
 
@@ -65,7 +63,7 @@ class LoginRoute extends Component {
   }
 
   onSubmitSuccess = jwtToken => {
-    Cookies.set('jwtToken', jwtToken, {expires: 30})
+    Cookies.set('jwt_token', jwtToken, {expires: 30})
     const {history} = this.props
     history.replace('/')
   }
