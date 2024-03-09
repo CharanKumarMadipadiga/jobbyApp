@@ -14,11 +14,71 @@ const apiStatusConstants = {
   failure: 'FAILURE',
 }
 
+const employmentTypesList = [
+  {
+    label: 'Full Time',
+    employmentTypeId: 'FULLTIME',
+  },
+  {
+    label: 'Part Time',
+    employmentTypeId: 'PARTTIME',
+  },
+  {
+    label: 'Freelance',
+    employmentTypeId: 'FREELANCE',
+  },
+  {
+    label: 'Internship',
+    employmentTypeId: 'INTERNSHIP',
+  },
+]
+
+const salaryRangesList = [
+  {
+    salaryRangeId: '1000000',
+    label: '10 LPA and above',
+  },
+  {
+    salaryRangeId: '2000000',
+    label: '20 LPA and above',
+  },
+  {
+    salaryRangeId: '3000000',
+    label: '30 LPA and above',
+  },
+  {
+    salaryRangeId: '4000000',
+    label: '40 LPA and above',
+  },
+]
+
 class Jobs extends Component {
-  state = {jobsList: [], apiStatus: apiStatusConstants.initial}
+  state = {jobsList: [], apiStatus: apiStatusConstants.initial, profileObj: {}}
 
   componentDidMount() {
+    this.getProfileDetails()
     this.getJobsList()
+  }
+
+  getProfileDetails = async () => {
+    const jwtToken = Cookies.get('jwt_token')
+    const profileApiUrl = 'https://apis.ccbp.in/profile'
+    const options = {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
+      method: 'GET',
+    }
+    const response = await fetch(profileApiUrl, options)
+    if (response.ok === true) {
+      const data = await response.json()
+      const updatedProfileData = {
+        name: data.profile_details.name,
+        profileImageUrl: data.profile_details.profile_image_url,
+        shortBio: data.profile_details.short_bio,
+      }
+      this.setState({profileObj: updatedProfileData})
+    }
   }
 
   getJobsList = async () => {
@@ -36,7 +96,6 @@ class Jobs extends Component {
     const response = await fetch(apiUrl, options)
     if (response.ok === true) {
       const data = await response.json()
-      console.log(data)
       const updatedData = data.jobs.map(eachItem => ({
         companyLogoUrl: eachItem.company_logo_url,
         employmentType: eachItem.employment_type,
@@ -119,7 +178,8 @@ class Jobs extends Component {
   )
 
   render() {
-    const {jobsList} = this.state
+    const {jobsList, profileObj} = this.state
+    const {name, shortBio, profileImageUrl} = profileObj
 
     return (
       <>
@@ -135,26 +195,24 @@ class Jobs extends Component {
             </div>
             <div className="profile-card">
               <img
-                src="https://png.pngtree.com/png-vector/20190710/ourlarge/pngtree-user-vector-avatar-png-image_1541962.jpg"
+                src={profileImageUrl}
                 className="profile-img"
                 alt="profile"
               />
-              <h1 className="profile-name">Charan Kumar Madipadiga</h1>
-              <p className="role">Full-stack Developer and Data Analyst</p>
+              <h1 className="profile-name">{name}</h1>
+              <p className="role">{shortBio}</p>
             </div>
             <hr className="line" />
             {this.renderCheckBoxTabs()}
             <hr className="line" />
             {this.renderRadioTabs()}
           </div>
-          <div className="desktop-content-view">
-            <p className="para">box</p>
-            <ul className="jobs-list-container">
-              {jobsList.map(eachItem => (
-                <JobItem jobDetails={eachItem} key={eachItem.id} />
-              ))}
-            </ul>
-          </div>
+
+          <ul className="jobs-list-container">
+            {jobsList.map(eachItem => (
+              <JobItem jobDetails={eachItem} key={eachItem.id} />
+            ))}
+          </ul>
         </div>
       </>
     )

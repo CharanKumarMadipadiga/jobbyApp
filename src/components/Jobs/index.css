@@ -107,8 +107,12 @@
   font-family: 'Roboto';
   font-size: 16px;
 }
-.desktop-content-view {
+.jobs-list-container {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 7px;
 }
 
 @media screen and (min-width: 768px) {
@@ -147,11 +151,13 @@
     font-size: 14px;
   }
 
-  .desktop-content-view {
+  .jobs-list-container {
     display: flex;
     flex-direction: column;
     width: 75%;
-    border: 1px solid white;
+    padding-left: 17px;
+    padding-right: 17px;
+    margin-top: 0px;
   }
 
   .para {
