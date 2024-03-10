@@ -1,6 +1,7 @@
 import {Component} from 'react'
 
 import Cookies from 'js-cookie'
+import Loader from 'react-loader-spinner'
 
 import Header from '../Header'
 import JobItem from '../JobItem'
@@ -110,6 +111,8 @@ class Jobs extends Component {
         jobsList: updatedData,
         apiStatus: apiStatusConstants.success,
       })
+    } else {
+      this.setState({apiStatus: apiStatusConstants.failure})
     }
   }
 
@@ -177,8 +180,57 @@ class Jobs extends Component {
     </>
   )
 
+  renderFailure = () => (
+    <div className="failure-container">
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
+        alt="failure view"
+        className="failure-img"
+      />
+      <h1 className="failure-heading">Oops! Something Went Wrong</h1>
+      <p className="failure-caption">
+        We cannot seem to find the page you are looking for.
+      </p>
+      <button type="button" className="retry-btn">
+        Retry
+      </button>
+    </div>
+  )
+
+  renderLoader = () => (
+    <div className="loader-container" data-testid="loader">
+      <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
+    </div>
+  )
+
+  renderJobsList = () => {
+    const {jobsList} = this.state
+    return (
+      <ul className="jobs-list-container">
+        {jobsList.map(eachItem => (
+          <JobItem jobDetails={eachItem} key={eachItem.id} />
+        ))}
+      </ul>
+    )
+  }
+
+  renderAllSections = () => {
+    const {apiStatus} = this.state
+
+    switch (apiStatus) {
+      case 'IN_PROGRESS':
+        return this.renderLoader()
+      case 'SUCCESS':
+        return this.renderJobsList()
+      case 'FAILURE':
+        return this.renderFailure()
+      default:
+        return null
+    }
+  }
+
   render() {
-    const {jobsList, profileObj} = this.state
+    const {profileObj} = this.state
     const {name, shortBio, profileImageUrl} = profileObj
 
     return (
@@ -207,12 +259,7 @@ class Jobs extends Component {
             <hr className="line" />
             {this.renderRadioTabs()}
           </div>
-
-          <ul className="jobs-list-container">
-            {jobsList.map(eachItem => (
-              <JobItem jobDetails={eachItem} key={eachItem.id} />
-            ))}
-          </ul>
+          {this.renderAllSections()}
         </div>
       </>
     )

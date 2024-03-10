@@ -115,6 +115,49 @@
   padding: 7px;
 }
 
+.loader-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.failure-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.failure-img {
+  width: 150px;
+  margin-bottom: 10px;
+}
+
+.failure-heading {
+  color: #ffffff;
+  height: 30px;
+  font-family: 'Roboto';
+  font-weight: 600;
+}
+
+.failure-caption {
+  color: #64748b;
+  font-family: 'Roboto';
+}
+
+.retry-btn {
+  height: 30px;
+  width: 90px;
+  color: #ffffff;
+  background-color: #4f46e5;
+  border: none;
+  border-radius: 7px;
+  font-weight: 500;
+}
+
 @media screen and (min-width: 768px) {
   .jobs-container {
     display: flex;
@@ -149,6 +192,10 @@
 
   .role {
     font-size: 14px;
+  }
+
+  .loader-container {
+    width: 60%;
   }
 
   .jobs-list-container {

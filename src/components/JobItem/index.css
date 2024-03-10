@@ -10,6 +10,10 @@
   margin-left: 0px;
 }
 
+.job-card-item:hover {
+  border: 1px solid #ffffff;
+}
+
 .logo-rating-container {
   display: flex;
 }
