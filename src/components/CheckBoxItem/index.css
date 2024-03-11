@@ -1,0 +1,19 @@
+.checkbox-container {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.checkbox-El {
+  height: 18px;
+  width: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  color: #cbd5e1;
+  font-family: 'Roboto';
+  font-size: 16px;
+  cursor: pointer;
+}

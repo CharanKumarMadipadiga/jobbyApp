@@ -118,7 +118,6 @@ class JobItemDetails extends Component {
       packagePerAnnum,
       jobDescription,
       companyWebsiteUrl,
-      lifeAtCompany,
       description,
       imageUrl,
     } = jobDetailsObj

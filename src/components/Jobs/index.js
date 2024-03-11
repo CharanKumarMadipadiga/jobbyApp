@@ -1,9 +1,13 @@
 import {Component} from 'react'
 
+import {BsSearch} from 'react-icons/bs'
+
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 
 import Header from '../Header'
+import CheckBoxItem from '../CheckBoxItem'
+import RadioTabItems from '../RadioTabItems'
 import JobItem from '../JobItem'
 
 import './index.css'
@@ -54,7 +58,14 @@ const salaryRangesList = [
 ]
 
 class Jobs extends Component {
-  state = {jobsList: [], apiStatus: apiStatusConstants.initial, profileObj: {}}
+  state = {
+    jobsList: [],
+    apiStatus: apiStatusConstants.initial,
+    profileObj: {},
+    employmentTypeArray: [],
+    minimumSalary: '',
+    searchInput: '',
+  }
 
   componentDidMount() {
     this.getProfileDetails()
@@ -85,8 +96,8 @@ class Jobs extends Component {
   getJobsList = async () => {
     this.setState({apiStatus: apiStatusConstants.inProgress})
     const jwtToken = Cookies.get('jwt_token')
-
-    const apiUrl = 'https://apis.ccbp.in/jobs'
+    const {employmentTypeArray, minimumSalary, searchInput} = this.state
+    const apiUrl = `https://apis.ccbp.in/jobs?employment_type=${employmentTypeArray.join()}&minimum_package=${minimumSalary}&search=${searchInput}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -116,66 +127,51 @@ class Jobs extends Component {
     }
   }
 
+  changeRadioTab = value => {
+    this.setState({minimumSalary: value}, this.getJobsList)
+  }
+
   renderRadioTabs = () => (
     <>
       <h1 className="employment-heading">Salary Range</h1>
       <ul className="checkbox-list">
-        <li className="checkbox-container">
-          <input type="radio" id="10" className="checkbox-El" />
-          <label className="checkbox-label" htmlFor="10">
-            10 LPA and Above
-          </label>
-        </li>
-        <li className="checkbox-container">
-          <input type="radio" id="20" className="checkbox-El" />
-          <label className="checkbox-label" htmlFor="20">
-            20 LPA and Above
-          </label>
-        </li>
-        <li className="checkbox-container">
-          <input type="radio" id="30" className="checkbox-El" />
-          <label className="checkbox-label" htmlFor="30">
-            30 LPA and Above
-          </label>
-        </li>
-        <li className="checkbox-container">
-          <input type="radio" id="40" className="checkbox-El" />
-          <label className="checkbox-label" htmlFor="40">
-            40 LPA and Above
-          </label>
-        </li>
+        {salaryRangesList.map(eachItem => (
+          <RadioTabItems
+            radioTabDetails={eachItem}
+            changeRadioTab={this.changeRadioTab}
+          />
+        ))}
       </ul>
     </>
   )
+
+  checkBoxChange = id => {
+    const {employmentTypeArray} = this.state
+    if (employmentTypeArray.includes(id)) {
+      const updatedList = employmentTypeArray.filter(
+        eachItem => eachItem !== id,
+      )
+      this.setState({employmentTypeArray: updatedList}, this.getJobsList)
+    } else {
+      this.setState(
+        prevState => ({
+          employmentTypeArray: [...prevState.employmentTypeArray, id],
+        }),
+        this.getJobsList,
+      )
+    }
+  }
 
   renderCheckBoxTabs = () => (
     <>
       <h1 className="employment-heading">Types of Employment</h1>
       <ul className="checkbox-list">
-        <li className="checkbox-container">
-          <input type="checkbox" id="full time" className="checkbox-El" />
-          <label className="checkbox-label" htmlFor="full time">
-            Full Time
-          </label>
-        </li>
-        <li className="checkbox-container">
-          <input type="checkbox" id="part time" className="checkbox-El" />
-          <label className="checkbox-label" htmlFor="part time">
-            Part Time
-          </label>
-        </li>
-        <li className="checkbox-container">
-          <input type="checkbox" id="freelance" className="checkbox-El" />
-          <label className="checkbox-label" htmlFor="freelance">
-            Freelance
-          </label>
-        </li>
-        <li className="checkbox-container">
-          <input type="checkbox" id="internship" className="checkbox-El" />
-          <label className="checkbox-label" htmlFor="internship">
-            Internship
-          </label>
-        </li>
+        {employmentTypesList.map(eachItem => (
+          <CheckBoxItem
+            checkBoxDetails={eachItem}
+            checkBoxChange={this.checkBoxChange}
+          />
+        ))}
       </ul>
     </>
   )
@@ -205,13 +201,39 @@ class Jobs extends Component {
 
   renderJobsList = () => {
     const {jobsList} = this.state
-    return (
+    const jobsLength = jobsList.length
+    const noOfJobs = jobsLength > 0
+    return noOfJobs ? (
       <ul className="jobs-list-container">
         {jobsList.map(eachItem => (
           <JobItem jobDetails={eachItem} key={eachItem.id} />
         ))}
       </ul>
+    ) : (
+      <div className="no-jobs-container">
+        <img
+          src="https://assets.ccbp.in/frontend/react-js/no-jobs-img.png"
+          alt="no jobs"
+          className="no-jobs-img"
+        />
+        <h1>No jobs found</h1>
+        <p>We could not find any jobs. Try other filters.</p>
+      </div>
     )
+  }
+
+  onChangeSearchInput = event => {
+    this.setState({searchInput: event.target.value})
+  }
+
+  onKeyDownSearchInput = event => {
+    if (event.key === 'Enter') {
+      this.getJobsList()
+    }
+  }
+
+  onClickSearchBar = () => {
+    this.getJobsList()
   }
 
   renderAllSections = () => {
@@ -243,7 +265,18 @@ class Jobs extends Component {
                 type="search"
                 className="jobs-input-El"
                 placeholder="Search"
+                onChange={this.onChangeSearchInput}
+                onKeyDown={this.onKeyDownSearchInput}
               />
+              <button
+                className="search-btn"
+                type="button"
+                data-testid="searchButton"
+                aria-label="Search"
+                onClick={this.onClickSearchBar}
+              >
+                <BsSearch className="search-icon" />
+              </button>
             </div>
             <div className="profile-card">
               <img
@@ -259,7 +292,27 @@ class Jobs extends Component {
             <hr className="line" />
             {this.renderRadioTabs()}
           </div>
-          {this.renderAllSections()}
+          <div className="input-all-jobs-list-con">
+            <div className="jobs-input-container-desktop">
+              <input
+                type="search"
+                className="jobs-input-El"
+                placeholder="Search"
+                onChange={this.onChangeSearchInput}
+                onKeyDown={this.onKeyDownSearchInput}
+              />
+              <button
+                className="search-btn"
+                type="button"
+                data-testid="searchButton"
+                aria-label="Search"
+                onClick={this.onClickSearchBar}
+              >
+                <BsSearch className="search-icon" />
+              </button>
+            </div>
+            {this.renderAllSections()}
+          </div>
         </div>
       </>
     )

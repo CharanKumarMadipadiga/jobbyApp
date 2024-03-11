@@ -319,7 +319,10 @@
   font-family: 'Roboto';
   font-weight: 500;
   margin-top: 25px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
+  align-self: flex-start;
+  padding-left: 15px;
+  padding-top: 10px;
 }
 
 .similar-job-list {

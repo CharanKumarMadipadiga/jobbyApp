@@ -63,6 +63,11 @@
   font-size: 15px;
 }
 
+.login-btn:hover {
+  border: 1px solid #ffffff;
+  font-size: 17px;
+}
+
 @media screen and (min-width: 768px) {
   .login-card {
     max-width: 370px;
@@ -92,4 +97,12 @@
 .error-message {
   color: #ff0b37;
   font-family: 'Roboto';
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+@media screen and (min-width: 768px) {
+  .error-message {
+    font-size: 14px;
+  }
 }
