@@ -4,6 +4,7 @@ import {BsSearch} from 'react-icons/bs'
 
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
+import {Redirect} from 'react-router-dom'
 
 import Header from '../Header'
 import CheckBoxItem from '../CheckBoxItem'
@@ -252,6 +253,10 @@ class Jobs extends Component {
   }
 
   render() {
+    const jwtToken = Cookies.get('jwt_token')
+    if (jwtToken === undefined) {
+      return <Redirect to="/login" />
+    }
     const {profileObj} = this.state
     const {name, shortBio, profileImageUrl} = profileObj
 
